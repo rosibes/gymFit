@@ -9,6 +9,8 @@ public class GymFitContext : DbContext
 
     public DbSet<Appointments> Appointments { get; set; }
 
+    public DbSet<Subscriptions> Subscriptions { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,6 +39,12 @@ public class GymFitContext : DbContext
             .WithMany() // Specifică că un Trainer poate avea multe Appointments
             .HasForeignKey(a => a.TrainerId) // Specifică că TrainerId din Appointments este cheia străină
             .OnDelete(DeleteBehavior.Cascade); // Specifică că dacă un Trainer este șters, toate Appointments-urile sale vor fi șterse
+
+        modelBuilder.Entity<Subscriptions>()
+            .HasOne(s => s.User)
+            .WithMany()
+            .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
 }

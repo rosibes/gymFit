@@ -17,6 +17,16 @@ public class AppointmentsController : ControllerBase
         _logger = LogManager.GetLogger(typeof(AppointmentsController));
     }
 
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Appointments>>> GetAppointments()
+    {
+        _logger.Info("Getting all appointments");
+        return await _context.Appointments
+            .Include(a => a.User)
+            .Include(a => a.Trainer)
+            .ToListAsync();
+    }
+
     [HttpPost]
     public async Task<ActionResult<Appointments>> CreateAppointment([FromBody] AppointmentCreateDto appointmentDto)
     {
@@ -101,13 +111,5 @@ public class AppointmentsController : ControllerBase
         }
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Appointments>>> GetAppointments()
-    {
-        _logger.Info("Getting all appointments");
-        return await _context.Appointments
-            .Include(a => a.User)
-            .Include(a => a.Trainer)
-            .ToListAsync();
-    }
+
 }

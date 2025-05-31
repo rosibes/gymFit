@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GymFit_BE.Migrations
 {
     [DbContext(typeof(GymFitContext))]
-    partial class GymFitContextModelSnapshot : ModelSnapshot
+    [Migration("20250531135535_AddSubscriptionModel")]
+    partial class AddSubscriptionModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +55,7 @@ namespace GymFit_BE.Migrations
                     b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("Subscriptions", b =>
+            modelBuilder.Entity("Subscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,8 +66,9 @@ namespace GymFit_BE.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("Price")
                         .HasColumnType("integer");
@@ -72,7 +76,7 @@ namespace GymFit_BE.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Type")
+                    b.Property<int>("SubscriptionTypeId")
                         .HasColumnType("integer");
 
                     b.Property<int>("UserId")
@@ -82,7 +86,7 @@ namespace GymFit_BE.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscription");
                 });
 
             modelBuilder.Entity("Trainer", b =>
@@ -187,7 +191,7 @@ namespace GymFit_BE.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Subscriptions", b =>
+            modelBuilder.Entity("Subscription", b =>
                 {
                     b.HasOne("User", "User")
                         .WithMany()
