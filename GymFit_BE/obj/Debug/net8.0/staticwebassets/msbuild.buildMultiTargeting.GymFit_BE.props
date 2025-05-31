@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/GymFit_BE.props" />
+</Project>

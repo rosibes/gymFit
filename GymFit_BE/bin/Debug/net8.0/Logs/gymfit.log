@@ -1,0 +1,99 @@
+2025-05-31 15:21:50,251 [9] INFO  UserController - Getting all users
+2025-05-31 15:22:16,684 [14] INFO  UserController - Creating new user: {"Id":0,"Name":"Mike Trainer","Email":"mike@examsple.com","Password":"Test123!","UserRole":"Trainer","PhoneNumber":"9876543210","DateOfBirth":"1985-05-15"}
+2025-05-31 15:22:16,896 [14] INFO  UserController - User created successfully with ID: 2
+2025-05-31 15:25:48,968 [14] INFO  UserController - Creating new user: {"Id":0,"Name":"Mike Trainer","Email":"mike@example.com","Password":"Test123!","UserRole":"Trainer","PhoneNumber":"9876543210","DateOfBirth":"1985-05-15"}
+2025-05-31 15:25:48,994 [14] WARN  UserController - Email already exists: mike@example.com
+2025-05-31 15:25:53,944 [17] INFO  UserController - Creating new user: {"Id":0,"Name":"Mike Trainer","Email":"midke@example.com","Password":"Test123!","UserRole":"Trainer","PhoneNumber":"9876543210","DateOfBirth":"1985-05-15"}
+2025-05-31 15:25:53,998 [14] INFO  UserController - User created successfully with ID: 3
+2025-05-31 15:26:20,249 [7] INFO  UserController - Creating new user: {"Id":0,"Name":"Mike Trainer","Email":"midke@example.com","Password":"Test123!","UserRole":"Trainer","PhoneNumber":"9876543210","DateOfBirth":"1985-05-15"}
+2025-05-31 15:26:21,265 [9] WARN  UserController - Email already exists: midke@example.com
+2025-05-31 15:26:23,884 [12] INFO  UserController - Creating new user: {"Id":0,"Name":"Mike Trainer","Email":"midfke@example.com","Password":"Test123!","UserRole":"Trainer","PhoneNumber":"9876543210","DateOfBirth":"1985-05-15"}
+2025-05-31 15:26:24,067 [12] INFO  UserController - User created successfully with ID: 4
+2025-05-31 15:26:29,544 [7] INFO  TrainerController - Creating new trainer: {"UserId":4,"Specialization":"Fitness Training","Experience":"5 years of professional training","Introduction":"Certified personal trainer specializing in fitness and nutrition","Availability":"Monday: 09:00-17:00, Tuesday: 10:00-18:00","Location":"Gym Center, Floor 2"}
+2025-05-31 15:26:29,747 [12] INFO  TrainerController - Trainer created successfully: 4
+2025-05-31 16:15:45,397 [9] INFO  AppointmentsController - Getting all appointments
+2025-05-31 16:24:34,779 [9] INFO  AppointmentsController - Getting all appointments
+2025-05-31 16:24:38,647 [7] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T19:15:00","Status":"Pending"}
+2025-05-31 16:24:38,896 [7] ERROR AppointmentsController - Error creating appointment
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> System.ArgumentException: Cannot write DateTime with Kind=Unspecified to PostgreSQL type 'timestamp with time zone', only UTC is supported. Note that it's not possible to mix DateTimes with different Kinds in an array, range, or multirange. (Parameter 'value')
+   at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(DateTime value, Nullable`1 expectedPgTypeId, Boolean validateOnly)
+   at Npgsql.Internal.Converters.DateTimeConverterResolver.<>c.<CreateResolver>b__0_0(DateTimeConverterResolver`1 resolver, DateTime value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(T value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.PgConverterResolver`1.GetAsObjectInternal(PgTypeInfo typeInfo, Object value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.PgResolverTypeInfo.GetResolutionAsObject(Object value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.PgTypeInfo.GetObjectResolution(Object value)
+   at Npgsql.NpgsqlParameter.ResolveConverter(PgTypeInfo typeInfo)
+   at Npgsql.NpgsqlParameter.ResolveTypeInfo(PgSerializerOptions options)
+   at Npgsql.NpgsqlParameterCollection.ProcessParameters(PgSerializerOptions options, Boolean validateValues, CommandType commandType)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at AppointmentsController.CreateAppointment(AppointmentCreateDto appointmentDto) in /Users/sebyboiciuc/Desktop/GymFit/GymFit_BE/Controllers/AppointmentsController.cs:line 69
+2025-05-31 16:25:37,112 [9] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T19:15:00","Status":"Pending"}
+2025-05-31 16:25:38,247 [9] ERROR AppointmentsController - Error creating appointment
+Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while saving the entity changes. See the inner exception for details.
+ ---> System.ArgumentException: Cannot write DateTime with Kind=Unspecified to PostgreSQL type 'timestamp with time zone', only UTC is supported. Note that it's not possible to mix DateTimes with different Kinds in an array, range, or multirange. (Parameter 'value')
+   at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(DateTime value, Nullable`1 expectedPgTypeId, Boolean validateOnly)
+   at Npgsql.Internal.Converters.DateTimeConverterResolver.<>c.<CreateResolver>b__0_0(DateTimeConverterResolver`1 resolver, DateTime value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.Converters.DateTimeConverterResolver`1.Get(T value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.PgConverterResolver`1.GetAsObjectInternal(PgTypeInfo typeInfo, Object value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.PgResolverTypeInfo.GetResolutionAsObject(Object value, Nullable`1 expectedPgTypeId)
+   at Npgsql.Internal.PgTypeInfo.GetObjectResolution(Object value)
+   at Npgsql.NpgsqlParameter.ResolveConverter(PgTypeInfo typeInfo)
+   at Npgsql.NpgsqlParameter.ResolveTypeInfo(PgSerializerOptions options)
+   at Npgsql.NpgsqlParameterCollection.ProcessParameters(PgSerializerOptions options, Boolean validateValues, CommandType commandType)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(IEnumerable`1 commandBatches, IRelationalConnection connection, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalDatabase.SaveChangesAsync(IList`1 entries, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IList`1 entriesToSave, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(StateManager stateManager, Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)
+   at AppointmentsController.CreateAppointment(AppointmentCreateDto appointmentDto) in /Users/sebyboiciuc/Desktop/GymFit/GymFit_BE/Controllers/AppointmentsController.cs:line 60
+2025-05-31 16:27:16,623 [13] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T19:15:00","Status":"Pending"}
+2025-05-31 16:27:17,817 [13] INFO  AppointmentsController - Appointment created successfully with ID: 5
+2025-05-31 16:27:36,139 [13] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T23:15:00","Status":"Pending"}
+2025-05-31 16:27:36,259 [13] INFO  AppointmentsController - Appointment created successfully with ID: 6
+2025-05-31 16:27:48,274 [9] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T23:40:00","Status":"Pending"}
+2025-05-31 16:27:48,400 [9] INFO  AppointmentsController - Appointment created successfully with ID: 7
+2025-05-31 16:32:48,620 [9] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T23:40:00","Status":"Pending"}
+2025-05-31 16:32:49,863 [7] INFO  AppointmentsController - Appointment created successfully with ID: 8
+2025-05-31 16:34:05,497 [10] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T23:40:00","Status":"Pending"}
+2025-05-31 16:34:06,675 [10] INFO  AppointmentsController - Appointment created successfully with ID: 9
+2025-05-31 16:34:33,723 [9] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T23:40:00","Status":"Pending"}
+2025-05-31 16:34:34,907 [12] INFO  AppointmentsController - Appointment created successfully with ID: 10
+2025-05-31 16:37:29,230 [9] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T23:40:00","Status":"Pending"}
+2025-05-31 16:37:30,348 [9] WARN  AppointmentsController - Overlapping appointment found for trainer 1 at 6/15/2025 11:40:00 PM
+2025-05-31 16:37:35,719 [9] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T22:40:00","Status":"Pending"}
+2025-05-31 16:37:35,947 [9] INFO  AppointmentsController - Appointment created successfully with ID: 11
+2025-05-31 16:37:43,999 [7] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T22:40:00","Status":"Pendings"}
+2025-05-31 16:37:44,119 [12] WARN  AppointmentsController - Overlapping appointment found for trainer 1 at 6/15/2025 10:40:00 PM
+2025-05-31 16:37:48,650 [9] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T22:41:00","Status":"Pendings"}
+2025-05-31 16:37:48,733 [9] WARN  AppointmentsController - Invalid appointment status: Pendings
+2025-05-31 16:37:52,596 [13] INFO  AppointmentsController - Creating new appointment: {"UserId":1,"TrainerId":1,"Date":"2025-06-15T22:41:00","Status":"Pending"}
+2025-05-31 16:37:52,718 [13] INFO  AppointmentsController - Appointment created successfully with ID: 12
