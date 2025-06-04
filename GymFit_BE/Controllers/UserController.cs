@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using log4net;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
-[ApiController]
 [Route("odata/[controller]")]
-[EnableQuery]
+[Authorize]
 public class UserController : ODataController
 {
     private readonly GymFitContext _context;
@@ -18,15 +19,16 @@ public class UserController : ODataController
         _logger = LogManager.GetLogger(typeof(UserController));
     }
 
-    [HttpGet]
-    public IQueryable<User> GetUsers()
+    [EnableQuery]
+    public IQueryable<User> Get()
     {
-        _logger.Info("Getting all users");
+        _logger.Info("Getting all users via OData");
         return _context.Users;
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> CreateUser(User user)
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<User>> CreateUser([FromBody] User user)
     {
         try
         {
@@ -46,11 +48,14 @@ public class UserController : ODataController
                 return BadRequest(new { error = "Invalid user data", details = ModelState });
             }
 
+            // Hash the password
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             _logger.Info($"User created successfully with ID: {user.Id}");
-            return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, user);
+            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
         catch (Exception ex)
         {

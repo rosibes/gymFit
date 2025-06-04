@@ -1,10 +1,14 @@
 using System.Reflection;
+using System.Text;
 using log4net;
 using log4net.Config;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 
 
 try
@@ -25,7 +29,58 @@ try
 
 
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "GymFit API", Version = "v1" });
+
+        // Add JWT Authentication
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+
+        // Add ConflictingActionsResolver
+        c.ResolveConflictingActions(apiDescriptions =>
+        {
+            var first = apiDescriptions.First();
+            return first;
+        });
+    });
+
+    // Configure JWT Authentication
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            };
+        });
 
     //prepare edm model for psql db
     builder.Services.AddDbContext<GymFitContext>(options =>
@@ -34,6 +89,9 @@ try
     // add odata support for controllers
     var modelBuilder = new ODataConventionModelBuilder();
     modelBuilder.EntitySet<User>("Users");
+    modelBuilder.EntitySet<Trainer>("Trainers");
+    modelBuilder.EntitySet<Subscriptions>("Subscriptions");
+    modelBuilder.EntitySet<Appointments>("Appointments");
 
     builder.Services.AddControllers()
         .AddOData(opt =>
@@ -60,6 +118,7 @@ try
 
     app.UseHttpsRedirection();
     app.UseCors();
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 

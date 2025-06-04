@@ -1,10 +1,14 @@
 using log4net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
-[ApiController]
 [Route("odata/[controller]")]
-public class SubscriptionsController : ControllerBase
+[Authorize]
+public class SubscriptionsController : ODataController
 {
     private readonly GymFitContext _context;
     private readonly ILog _logger;
@@ -14,17 +18,61 @@ public class SubscriptionsController : ControllerBase
         _context = context;
         _logger = LogManager.GetLogger(typeof(SubscriptionsController));
     }
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Subscriptions>>> GetSubscriptions()
+
+    [EnableQuery]
+    public IActionResult Get()
     {
-        _logger.Info("Getting all subscriptions");
-        return await _context.Subscriptions
+        _logger.Info("Getting all subscriptions via OData");
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+        // Verificăm dacă există un filtru pentru UserId
+        var odataQuery = HttpContext.Request.Query["$filter"].ToString();
+        if (odataQuery.Contains("UserId eq"))
+        {
+            // Extragem ID-ul utilizatorului din query
+            var requestedUserId = int.Parse(odataQuery.Split("UserId eq ")[1].Split(" ")[0]);
+
+            // Verificăm autorizarea
+            if (requestedUserId != userId && userRole != "Admin")
+            {
+                _logger.Warn($"User {userId} attempted to access subscriptions for user {requestedUserId}");
+                return Forbid();
+            }
+        }
+
+        // Doar adminii pot vedea toate abonamentele
+        if (userRole == "Admin")
+        {
+            _logger.Info(userRole);
+            _logger.Info("Admin is viewing all subscriptions");
+            return Ok(_context.Subscriptions
+                .Include(a => a.User)
+                .AsQueryable());
+        }
+
+        // Utilizatorii normali pot vedea doar propriile abonamente
+        _logger.Info($"User {userId} is viewing their own subscriptions");
+        return Ok(_context.Subscriptions
             .Include(a => a.User)
-            .ToListAsync();
+            .Where(s => s.UserId == userId)
+            .AsQueryable());
     }
+
     [HttpPost]
     public async Task<ActionResult<Subscriptions>> CreateSubscription([FromBody] SubscriptionCreateDTO subscriptionDto)
     {
+        _logger.Info($"Creating new subscription: {System.Text.Json.JsonSerializer.Serialize(subscriptionDto)}");
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+        // Verificăm dacă utilizatorul încearcă să creeze un abonament pentru alt utilizator
+        if (subscriptionDto.UserId != userId && userRole != "Admin")
+        {
+            _logger.Warn($"User {userId} attempted to create subscription for another user {subscriptionDto.UserId}");
+            return Forbid();
+        }
+
         _logger.Info($"Creating new subscription: {System.Text.Json.JsonSerializer.Serialize(subscriptionDto)}");
         var user = await _context.Users.FindAsync(subscriptionDto.UserId);
         if (user == null)

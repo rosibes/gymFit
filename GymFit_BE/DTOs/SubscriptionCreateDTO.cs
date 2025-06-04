@@ -4,7 +4,9 @@ using System.Text.Json.Serialization;
 public class SubscriptionCreateDTO
 {
     [Required(ErrorMessage = "User ID is required")]
+
     public int UserId { get; set; }
+
 
     [Required(ErrorMessage = "Subscription type is required")]
     [JsonConverter(typeof(JsonStringEnumConverter))]

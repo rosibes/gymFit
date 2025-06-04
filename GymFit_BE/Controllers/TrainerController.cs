@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using GymFit_BE.DTOs;
 using log4net;
+using Microsoft.AspNetCore.OData.Query;
 
 
-[ApiController]
 [Route("odata/[controller]")]
 public class TrainerController : ODataController
 {
@@ -19,11 +19,12 @@ public class TrainerController : ODataController
         _logger = LogManager.GetLogger(typeof(TrainerController));
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Trainer>>> GetTrainers()
+
+    [EnableQuery]
+    public IQueryable<Trainer> Get()
     {
-        _logger.Info("Getting all trainers");
-        return await _context.Trainers.ToListAsync();
+        _logger.Info("Getting all trainers via OData");
+        return _context.Trainers;
     }
 
     [HttpPost]

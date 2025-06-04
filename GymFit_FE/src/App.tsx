@@ -1,0 +1,28 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css'
+import AuthPage from './components/AuthPage'
+import { Dashboard } from './components/Dashboard'
+import { Trainers } from './components/Trainers';
+import { Subscriptions } from './components/Subscriptions';
+import { AuthProvider } from './context/AuthContext';
+import { Appointments } from './components/Appointments';
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<AuthPage isSingin={true} />} />
+          <Route path="/register" element={<AuthPage isSingin={false} />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path='/trainers' element={<Trainers />} />
+          <Route path='/subscriptions' element={<Subscriptions />} />
+          <Route path='appointments' element={<Appointments />} />
+          <Route path="/" element={<AuthPage isSingin={true} />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  )
+}
+
+export default App
