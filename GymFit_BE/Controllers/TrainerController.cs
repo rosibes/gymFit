@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 using GymFit_BE.DTOs;
 using log4net;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.Authorization;
 
 
 [Route("odata/[controller]")]
@@ -27,6 +28,7 @@ public class TrainerController : ODataController
         return _context.Trainers;
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<Trainer>> CreateTrainer([FromBody] TrainerCreateDto trainerDto)
     {

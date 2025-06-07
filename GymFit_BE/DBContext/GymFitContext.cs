@@ -11,6 +11,8 @@ public class GymFitContext : DbContext
 
     public DbSet<Subscriptions> Subscriptions { get; set; }
 
+    public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
