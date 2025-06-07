@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GymFit_BE.Migrations
 {
     [DbContext(typeof(GymFitContext))]
-    partial class GymFitContextModelSnapshot : ModelSnapshot
+    [Migration("20250607135535_AddTimeSlots")]
+    partial class AddTimeSlots
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,6 +50,8 @@ namespace GymFit_BE.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TimeSlotId");
 
                     b.HasIndex("TrainerId");
 
@@ -233,6 +238,12 @@ namespace GymFit_BE.Migrations
 
             modelBuilder.Entity("Appointments", b =>
                 {
+                    b.HasOne("GymFit_BE.Models.TimeSlot", "TimeSlot")
+                        .WithMany()
+                        .HasForeignKey("TimeSlotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Trainer", "Trainer")
                         .WithMany()
                         .HasForeignKey("TrainerId")
@@ -245,6 +256,8 @@ namespace GymFit_BE.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("TimeSlot");
+
                     b.Navigation("Trainer");
 
                     b.Navigation("User");
@@ -253,12 +266,12 @@ namespace GymFit_BE.Migrations
             modelBuilder.Entity("GymFit_BE.Models.TimeSlot", b =>
                 {
                     b.HasOne("Appointments", "Appointment")
-                        .WithOne("TimeSlot")
+                        .WithOne()
                         .HasForeignKey("GymFit_BE.Models.TimeSlot", "AppointmentId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Trainer", "Trainer")
-                        .WithMany("TimeSlots")
+                        .WithMany()
                         .HasForeignKey("TrainerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -288,17 +301,6 @@ namespace GymFit_BE.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Appointments", b =>
-                {
-                    b.Navigation("TimeSlot")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Trainer", b =>
-                {
-                    b.Navigation("TimeSlots");
                 });
 #pragma warning restore 612, 618
         }

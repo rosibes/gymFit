@@ -6,5 +6,4 @@ public class SubscriptionPlanDTO
     public decimal Price { get; set; }
     public int DurationInDays { get; set; }
     public SubscriptionType Type { get; set; }
-    public bool IsActive { get; set; }
 }

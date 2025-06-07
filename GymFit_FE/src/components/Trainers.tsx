@@ -6,12 +6,13 @@ export const Trainers = () => {
     const [trainers, setTrainers] = useState<Trainer[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedTrainer, setSelectedTrainer] = useState<Trainer | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchTrainers = async () => {
             try {
-                // Adăugăm un delay artificial de 2 secunde pentru test
-                await new Promise(resolve => setTimeout(resolve, 2000));
+
 
                 const response = await axios('http://localhost:5083/odata/trainer?$expand=User');
                 console.log('Răspuns de la server:', response.data);
@@ -25,6 +26,16 @@ export const Trainers = () => {
         }
         fetchTrainers();
     }, []);
+
+    const handleAppointmentClick = (trainer: Trainer) => {
+        setSelectedTrainer(trainer);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedTrainer(null);
+    };
 
     if (error) return <div className="text-red-500">{error}</div>;
     if (!loading && (!trainers || trainers.length === 0)) return <div>Nu există antrenori disponibili</div>;
@@ -75,7 +86,7 @@ export const Trainers = () => {
                         ))
                     ) : (
                         trainers.map((t) => (
-                            <div key={t.Id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div key={t.Id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
                                 {/* Header cu informații de contact */}
                                 <div className="p-6 border-b border-gray-200">
                                     <h2 className="text-2xl font-bold text-gray-800 mb-2">{t.User?.Name || 'Nume indisponibil'}</h2>
@@ -96,30 +107,41 @@ export const Trainers = () => {
                                 </div>
 
                                 {/* Detalii despre antrenor */}
-                                <div className="p-6 space-y-4">
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-700 mb-1">Specializare</h3>
-                                        <p className="text-gray-600">{t.Specialization}</p>
+                                <div className="p-6 space-y-4 flex-1 flex flex-col">
+                                    <div className="flex-1">
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-700 mb-1">Specializare</h3>
+                                            <p className="text-gray-600">{t.Specialization}</p>
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-700 mb-1">Experiență</h3>
+                                            <p className="text-gray-600">{t.Experience}</p>
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-700 mb-1">Introducere</h3>
+                                            <p className="text-gray-600">{t.Introduction}</p>
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-700 mb-1">Disponibilitate</h3>
+                                            <p className="text-gray-600 whitespace-pre-line">{t.Availability}</p>
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-700 mb-1">Locație</h3>
+                                            <p className="text-gray-600">{t.Location}</p>
+                                        </div>
                                     </div>
 
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-700 mb-1">Experiență</h3>
-                                        <p className="text-gray-600">{t.Experience}</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-700 mb-1">Introducere</h3>
-                                        <p className="text-gray-600">{t.Introduction}</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-700 mb-1">Disponibilitate</h3>
-                                        <p className="text-gray-600 whitespace-pre-line">{t.Availability}</p>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-700 mb-1">Locație</h3>
-                                        <p className="text-gray-600">{t.Location}</p>
+                                    <div className="mt-auto pt-4">
+                                        <button
+                                            onClick={() => handleAppointmentClick(t)}
+                                            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                                        >
+                                            Programează o sesiune
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -127,6 +149,14 @@ export const Trainers = () => {
                     )}
                 </div>
             </div>
+
+            {/* {selectedTrainer && (
+                <AppointmentModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    trainer={selectedTrainer}
+                />
+            )} */}
         </div>
-    )
-}
+    );
+};

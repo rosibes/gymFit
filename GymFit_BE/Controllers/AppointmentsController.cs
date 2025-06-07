@@ -1,4 +1,5 @@
 using GymFit_BE.DTOs;
+using GymFit_BE.Models;
 using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
@@ -62,24 +63,22 @@ namespace GymFit_BE.Controllers
 
         }
 
-        [HttpPost]
+        [HttpPost("new")]
         public async Task<ActionResult<Appointments>> CreateAppointment([FromBody] AppointmentCreateDto appointmentDto)
         {
             try
             {
-                _logger.Info($"Creating new subscription: {System.Text.Json.JsonSerializer.Serialize(appointmentDto)}");
+                _logger.Info($"Creating new appointment: {System.Text.Json.JsonSerializer.Serialize(appointmentDto)}");
                 var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
                 var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
                 // Verificăm dacă utilizatorul încearcă să creeze un appointment pentru alt utilizator
                 if (appointmentDto.UserId != userId && userRole != "Admin")
                 {
-                    _logger.Warn($"User {userId} attempted to create subscription for another user {appointmentDto.UserId}");
+                    _logger.Warn($"User {userId} attempted to create appointment for another user {appointmentDto.UserId}");
                     return Forbid();
                 }
 
-
-                _logger.Info($"Attempting to create new appointment: {System.Text.Json.JsonSerializer.Serialize(appointmentDto)}");
                 var user = await _context.Users.FindAsync(appointmentDto.UserId);
                 if (user == null)
                 {
@@ -104,52 +103,54 @@ namespace GymFit_BE.Controllers
                     return BadRequest(new
                     {
                         error = "Invalid appointment date",
-                        message = "Appointment date must be in the future",
-
+                        message = "Appointment date must be in the future"
                     });
                 }
 
-                //  Verificare suprapunere programări
-                var hasOverlap = await _context.Appointments
-                    .AnyAsync(a => a.TrainerId == appointmentDto.TrainerId
-                               && a.Date == appointmentDate
-                               && a.Status != "Cancelled");
+                // Verificăm dacă există deja o programare pentru această oră în aceeași zi
+                var existingAppointment = await _context.Appointments
+                    .Include(a => a.TimeSlot)
+                    .FirstOrDefaultAsync(a => a.TrainerId == appointmentDto.TrainerId
+                                         && a.Date.Date == appointmentDate.Date
+                                         && a.TimeSlot.Hour == appointmentDto.Hour
+                                         && a.Status != "Cancelled");
 
-                if (hasOverlap)
+                if (existingAppointment != null)
                 {
-                    _logger.Warn($"Overlapping appointment found for trainer {appointmentDto.TrainerId} at {appointmentDate}");
+                    _logger.Warn($"Overlapping appointment found for trainer {appointmentDto.TrainerId} at {appointmentDate} hour {appointmentDto.Hour}");
                     return BadRequest(new
                     {
                         error = "Overlapping appointment",
                         message = "Trainer already has an appointment at this time",
-                        date = appointmentDate
+                        date = appointmentDate,
+                        hour = appointmentDto.Hour
                     });
                 }
 
-                var validStatuses = new[] { "Pending", "Confirmed", "Cancelled", "Completed" };
-                if (!validStatuses.Contains(appointmentDto.Status))
+                // Creăm un nou slot de timp pentru această programare
+                var timeSlot = new TimeSlot
                 {
-                    _logger.Warn($"Invalid appointment status: {appointmentDto.Status}");
-                    return BadRequest(new
-                    {
-                        error = "Invalid status",
-                        message = "Status must be one of: " + string.Join(", ", validStatuses),
-                        providedStatus = appointmentDto.Status
-                    });
-                }
+                    TrainerId = appointmentDto.TrainerId,
+                    Hour = appointmentDto.Hour,
+                    IsAvailable = false
+                };
+                _context.TimeSlots.Add(timeSlot);
+                await _context.SaveChangesAsync();
 
                 var appointment = new Appointments
                 {
                     UserId = appointmentDto.UserId,
                     TrainerId = appointmentDto.TrainerId,
                     Date = appointmentDate,
-                    Status = appointmentDto.Status
+                    Status = appointmentDto.Status,
+                    TimeSlotId = timeSlot.Id
                 };
+
                 _context.Appointments.Add(appointment);
                 await _context.SaveChangesAsync();
 
                 _logger.Info($"Appointment created successfully with ID: {appointment.Id}");
-                return appointment;
+                return Ok(appointment);
             }
             catch (Exception ex)
             {

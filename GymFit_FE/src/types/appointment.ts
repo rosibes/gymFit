@@ -1,7 +1,7 @@
 export type AppointmentStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
 
 export interface Appointment {
-    Id: number;
+    Id?: number;
     UserId: number,
     User?: {
         Id: number;

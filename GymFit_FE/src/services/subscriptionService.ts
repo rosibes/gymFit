@@ -49,28 +49,26 @@ export const subscriptionService = {
         }
     },
 
-    createSubscription: async (subscriptionData: Subscription): Promise<Subscription> => {
+    createSubscription: async (subscription: Subscription): Promise<Subscription> => {
         try {
-            const response = await axios.post('http://localhost:5083/odata/subscriptions',
-                {
-                    data: subscriptionData,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
+            const response = await axios.post('http://localhost:5083/odata/subscriptions', subscription, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
-            );
+            });
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 if (error.response?.status === 403 || error.response?.status === 401) {
-                    throw new Error('Nu ai permisiunea să creezi abonamente pentru alți utilizatori');
+                    throw new Error('Nu ai permisiunea să creezi un abonament');
                 }
                 throw new Error(error.response?.data?.message || 'Eroare la crearea abonamentului');
             }
             throw error;
         }
     },
+
 
     getAllSubscriptions: async (): Promise<Subscription[]> => {
         try {

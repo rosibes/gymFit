@@ -72,10 +72,10 @@ export const Subscriptions = () => {
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">No Active Subscriptions</h3>
                             <p className="text-gray-600 mb-4">Get access to premium features and personalized training.</p>
                             <button
-                                onClick={() => navigate('/subscriptions')}
+                                onClick={() => navigate('/subscription-plans')}
                                 className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
                             >
-                                View Subscription Plans
+                                Buy Subscription
                             </button>
                         </div>                    </div>
                 ) : (

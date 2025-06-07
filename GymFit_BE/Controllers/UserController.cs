@@ -20,10 +20,10 @@ public class UserController : ODataController
     }
 
     [EnableQuery]
-    public IQueryable<User> Get()
+    public IActionResult Get()
     {
         _logger.Info("Getting all users via OData");
-        return _context.Users;
+        return Ok(_context.Users.AsQueryable());
     }
 
     [HttpPost]

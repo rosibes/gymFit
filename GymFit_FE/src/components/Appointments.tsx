@@ -199,7 +199,7 @@ export const Appointments = ({ filterStatus = 'All', showTitle = true }: Appoint
                                     <div className="mt-4 flex space-x-2">
                                         <button
                                             className="flex-1 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
-                                            onClick={() => handleCancelAppointment(appointment.Id)}
+                                            onClick={() => handleCancelAppointment(appointment.Id!)}
                                         >
                                             Cancel
                                         </button>

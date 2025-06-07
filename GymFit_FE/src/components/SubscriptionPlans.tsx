@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
 import { subscriptionPlanService } from "../services/subscriptionPlanService";
+import { subscriptionService } from "../services/subscriptionService";
 import type { SubscriptionPlan } from "../types/subscriptionPlan";
+import type { Subscription } from "../types/subscription";
+import { SubscriptionType } from "../types/subscriptionPlan";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export const SubscriptionPlans = () => {
     const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchSubscriptionPlans();
@@ -26,6 +34,35 @@ export const SubscriptionPlans = () => {
             setLoading(false);
         }
     }
+
+    const handleSubscribe = async (plan: SubscriptionPlan) => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const startDate = new Date();
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + plan.DurationInDays);
+
+            const subscriptionData = {
+                UserId: user.id,
+                Type: SubscriptionType[plan.Type as keyof typeof SubscriptionType],
+                Price: Math.round(plan.Price),
+                StartDate: startDate.toISOString(),
+                EndDate: endDate.toISOString(),
+                IsActive: true
+            };
+
+            await subscriptionService.createSubscription(subscriptionData);
+            toast.success('Subscription created successfully!');
+            navigate('/subscriptions');
+        } catch (error) {
+            console.error('Error creating subscription:', error);
+            toast.error('Failed to create subscription. Please try again.');
+        }
+    };
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -64,7 +101,10 @@ export const SubscriptionPlans = () => {
                                 </div>
                             </div>
                             <div className="mt-6">
-                                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                                <button
+                                    onClick={() => handleSubscribe(plan)}
+                                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300"
+                                >
                                     Subscribe Now
                                 </button>
                             </div>
@@ -74,4 +114,4 @@ export const SubscriptionPlans = () => {
             </div>
         </div>
     );
-}
+};

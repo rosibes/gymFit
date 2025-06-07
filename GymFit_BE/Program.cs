@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using GymFit_BE.Models;
 
 
 try
@@ -92,10 +93,24 @@ try
     modelBuilder.EntitySet<Trainer>("Trainers");
     modelBuilder.EntitySet<Subscriptions>("Subscriptions");
     modelBuilder.EntitySet<Appointments>("Appointments");
+    modelBuilder.EntitySet<SubscriptionPlan>("SubscriptionPlans");
+    modelBuilder.EntitySet<TimeSlot>("TimeSlots");
 
     builder.Services.AddControllers()
         .AddOData(opt =>
-            opt.Select().Filter().OrderBy().Expand().SetMaxTop(100).AddRouteComponents("odata", modelBuilder.GetEdmModel())); // Adaugă suport OData (filtrare, sortare)
+        {
+            opt.Select()
+               .Filter()
+               .OrderBy()
+               .Expand()
+               .Count()
+               .SetMaxTop(100)
+               .AddRouteComponents("odata", modelBuilder.GetEdmModel());
+        })
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        });
 
     // Add CORS
     builder.Services.AddCors(options =>

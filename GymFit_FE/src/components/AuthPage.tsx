@@ -23,7 +23,7 @@ export default function AuthPage({ isSingin }: { isSingin: boolean }) {
             const response = await axios.post(`http://localhost:5083/odata/auth/${endpoint}`, data);
 
             if (isSingin) {
-                login(response.data.token);
+                await login(response.data.token);
                 navigate('/dashboard');
             } else {
                 navigate('/login');

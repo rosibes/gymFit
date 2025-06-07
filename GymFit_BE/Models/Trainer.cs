@@ -1,9 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using GymFit_BE.Models;
 
 public class Trainer
 {
     public int Id { get; set; }
+    [Required(ErrorMessage = "User is required")]
     public int UserId { get; set; }
+
+    [Required(ErrorMessage = "User is required")]
     public User User { get; set; }
 
     [Required(ErrorMessage = "Specialization is required")]
@@ -25,4 +29,8 @@ public class Trainer
 
     [Required(ErrorMessage = "Location is required")]
     public string Location { get; set; }
+
+    [Required(ErrorMessage = "TimeSlots is required")]
+    public ICollection<TimeSlot> TimeSlots { get; set; }
+
 }

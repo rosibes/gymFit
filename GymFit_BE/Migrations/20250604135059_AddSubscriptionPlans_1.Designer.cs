@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GymFit_BE.Migrations
 {
     [DbContext(typeof(GymFitContext))]
-    partial class GymFitContextModelSnapshot : ModelSnapshot
+    [Migration("20250604135059_AddSubscriptionPlans_1")]
+    partial class AddSubscriptionPlans_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +40,6 @@ namespace GymFit_BE.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
-                    b.Property<int>("TimeSlotId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("TrainerId")
                         .HasColumnType("integer");
 
@@ -53,36 +53,6 @@ namespace GymFit_BE.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Appointments");
-                });
-
-            modelBuilder.Entity("GymFit_BE.Models.TimeSlot", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AppointmentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Hour")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("TrainerId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppointmentId")
-                        .IsUnique();
-
-                    b.HasIndex("TrainerId");
-
-                    b.ToTable("TimeSlots");
                 });
 
             modelBuilder.Entity("SubscriptionPlan", b =>
@@ -250,24 +220,6 @@ namespace GymFit_BE.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GymFit_BE.Models.TimeSlot", b =>
-                {
-                    b.HasOne("Appointments", "Appointment")
-                        .WithOne("TimeSlot")
-                        .HasForeignKey("GymFit_BE.Models.TimeSlot", "AppointmentId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Trainer", "Trainer")
-                        .WithMany("TimeSlots")
-                        .HasForeignKey("TrainerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
-
-                    b.Navigation("Trainer");
-                });
-
             modelBuilder.Entity("Subscriptions", b =>
                 {
                     b.HasOne("User", "User")
@@ -288,17 +240,6 @@ namespace GymFit_BE.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Appointments", b =>
-                {
-                    b.Navigation("TimeSlot")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Trainer", b =>
-                {
-                    b.Navigation("TimeSlots");
                 });
 #pragma warning restore 612, 618
         }

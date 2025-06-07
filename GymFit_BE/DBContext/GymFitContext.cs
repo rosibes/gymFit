@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using GymFit_BE.Models;
 
 public class GymFitContext : DbContext
 {
@@ -12,8 +13,7 @@ public class GymFitContext : DbContext
     public DbSet<Subscriptions> Subscriptions { get; set; }
 
     public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
-
-
+    public DbSet<TimeSlot> TimeSlots { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Trainer>()
@@ -47,6 +47,18 @@ public class GymFitContext : DbContext
             .WithMany()
             .HasForeignKey(s => s.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Trainer>()
+               .HasMany(t => t.TimeSlots)
+               .WithOne(ts => ts.Trainer)
+               .HasForeignKey(ts => ts.TrainerId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TimeSlot>()
+            .HasOne(ts => ts.Appointment)
+            .WithOne(a => a.TimeSlot)
+            .HasForeignKey<TimeSlot>(ts => ts.AppointmentId)
+            .OnDelete(DeleteBehavior.SetNull); // Schimbăm în SetNull pentru a nu șterge slotul când se șterge programarea
     }
 
 }

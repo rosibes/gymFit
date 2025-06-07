@@ -99,9 +99,9 @@ export const appointmentsService = {
         }
     },
 
-    createAppointment: async (appointmentsData: Subscription) => {
+    createAppointment: async (appointmentsData: Appointment) => {
         try {
-            const response = await axios.post("http://localhost:5083/odata/appointments",
+            const response = await axios.post("http://localhost:5083/odata/appointments/new",
                 appointmentsData,
                 {
                     headers: {
@@ -167,5 +167,7 @@ export const appointmentsService = {
             }
             throw error;
         }
-    }
+    },
+
+
 }

@@ -1,5 +1,15 @@
+export enum SubscriptionType {
+    Fitness = 0,
+    Pilates = 1,
+    Yoga = 2,
+    CrossFit = 3,
+    Swimming = 4,
+    PersonalTraining = 5,
+    Cardio = 7
+}
+
 export interface Subscription {
-    Id: number;
+    Id?: number;
     UserId: number;
     User?: {
         Id: number;
@@ -9,8 +19,9 @@ export interface Subscription {
         DateOfBirth: string;
         UserRole: number;
     };
-    Type: string;
+    Type: SubscriptionType;
     Price: number;
     StartDate: string;
     EndDate: string;
+    IsActive: boolean;
 }

@@ -14,6 +14,10 @@ public class AppointmentCreateDto
     public DateTime Date { get; set; }
 
     [Required]
+    [Range(9, 20, ErrorMessage = "Hour must be between 9 and 20")]
+    public int Hour { get; set; }
+
+    [Required]
     [StringLength(20)]
     public string Status { get; set; } = "Pending";
 }
