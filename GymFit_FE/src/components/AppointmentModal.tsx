@@ -43,6 +43,14 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, tr
         }
     };
 
+    const handleTimeSlotClick = (slot: TimeSlot) => {
+        if (selectedTimeSlot?.id === slot.id) {
+            setSelectedTimeSlot(null);
+        } else {
+            setSelectedTimeSlot(slot);
+        }
+    };
+
     const handleSubmit = async () => {
         if (!selectedDate || !selectedTimeSlot) {
             toast.error('Te rugăm să selectezi data și ora');
@@ -110,7 +118,7 @@ const AppointmentModal: React.FC<AppointmentModalProps> = ({ isOpen, onClose, tr
                                 {availableTimeSlots.map(slot => (
                                     <button
                                         key={slot.id}
-                                        onClick={() => setSelectedTimeSlot(slot)}
+                                        onClick={() => handleTimeSlotClick(slot)}
                                         className={`p-2 rounded-lg text-center transition-colors ${selectedTimeSlot?.id === slot.id
                                             ? 'bg-blue-600 text-white'
                                             : 'bg-gray-100 hover:bg-gray-200'

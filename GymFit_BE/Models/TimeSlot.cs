@@ -14,7 +14,6 @@ namespace GymFit_BE.Models
         [Required(ErrorMessage = "Trainer is required")]
         public Trainer Trainer { get; set; }
 
-
         [Required(ErrorMessage = "Hour is required")]
         public int Hour { get; set; }  // 9-20
 

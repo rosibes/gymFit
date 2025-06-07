@@ -70,24 +70,24 @@ public class TimeSlotsController : ODataController
 
             _logger.Info($"Getting available time slots for trainer {trainerId} on {utcDate}");
 
-            // Obținem toate programările pentru trainer în ziua respectivă
-            var appointments = await _context.Appointments
-                .Include(a => a.TimeSlot)
-                .Where(a => a.TrainerId == trainerId && a.Date.Date == utcDate.Date && a.Status != "Cancelled")
+            // Obținem toate programările active pentru trainer în ziua respectivă
+            var activeAppointments = await _context.Appointments
+                .Where(a => a.TrainerId == trainerId &&
+                           a.Date.Date == utcDate.Date &&
+                           a.Status != "Cancelled")
+                .Select(a => a.TimeSlot.Hour)
                 .ToListAsync();
 
             // Creăm o listă cu toate orele posibile (9:00-17:00)
             var allHours = Enumerable.Range(9, 9).ToList(); // 9:00 - 17:00
 
-            // Obținem orele ocupate
-            var occupiedHours = appointments.Select(a => a.TimeSlot.Hour).ToList();
+            // Returnăm doar orele care nu sunt ocupate
+            var availableHours = allHours.Where(h => !activeAppointments.Contains(h)).ToList();
 
-            // Returnăm doar orele disponibile
-            var availableHours = allHours.Where(h => !occupiedHours.Contains(h)).ToList();
-
-            // Creăm sloturi de timp pentru orele disponibile
-            var availableSlots = availableHours.Select(hour => new TimeSlot
+            // Creăm sloturi de timp pentru orele disponibile cu ID-uri unice
+            var availableSlots = availableHours.Select((hour, index) => new TimeSlot
             {
+                Id = index + 1, // Generăm ID-uri unice începând cu 1
                 TrainerId = trainerId,
                 Hour = hour,
                 IsAvailable = true

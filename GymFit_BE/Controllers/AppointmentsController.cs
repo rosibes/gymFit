@@ -110,10 +110,11 @@ namespace GymFit_BE.Controllers
                 // Verificăm dacă există deja o programare pentru această oră în aceeași zi
                 var existingAppointment = await _context.Appointments
                     .Include(a => a.TimeSlot)
-                    .FirstOrDefaultAsync(a => a.TrainerId == appointmentDto.TrainerId
-                                         && a.Date.Date == appointmentDate.Date
-                                         && a.TimeSlot.Hour == appointmentDto.Hour
-                                         && a.Status != "Cancelled");
+                    .Where(a => a.TrainerId == appointmentDto.TrainerId
+                            && a.Date.Date == appointmentDate.Date
+                            && a.TimeSlot.Hour == appointmentDto.Hour
+                            && a.Status != "Cancelled")
+                    .FirstOrDefaultAsync();
 
                 if (existingAppointment != null)
                 {
@@ -147,6 +148,10 @@ namespace GymFit_BE.Controllers
                 };
 
                 _context.Appointments.Add(appointment);
+                await _context.SaveChangesAsync();
+
+                // Actualizăm slotul de timp cu ID-ul programării
+                timeSlot.AppointmentId = appointment.Id;
                 await _context.SaveChangesAsync();
 
                 _logger.Info($"Appointment created successfully with ID: {appointment.Id}");
