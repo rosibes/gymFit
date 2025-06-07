@@ -6,6 +6,7 @@ import { Trainers } from './components/Trainers';
 import { Subscriptions } from './components/Subscriptions';
 import { AuthProvider } from './context/AuthContext';
 import { Appointments } from './components/Appointments';
+import { SubscriptionPlans } from './components/SubscriptionPlans';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path='/trainers' element={<Trainers />} />
           <Route path='/subscriptions' element={<Subscriptions />} />
           <Route path='appointments' element={<Appointments />} />
+          <Route path="/subscription-plans" element={<SubscriptionPlans />} />
           <Route path="/" element={<AuthPage isSingin={true} />} />
         </Routes>
       </Router>
