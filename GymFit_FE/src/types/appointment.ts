@@ -3,6 +3,11 @@ export type AppointmentStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Complet
 export interface Appointment {
     Id?: number;
     UserId: number,
+    TimeSlot: {
+        Id: number;
+        Hour: number;
+    },
+    TimeSlotId: number,
     User?: {
         Id: number;
         Name: string;

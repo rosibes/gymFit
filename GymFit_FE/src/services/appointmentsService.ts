@@ -8,7 +8,7 @@ export const appointmentsService = {
             const response = await axios.get('http://localhost:5083/odata/appointments', {
                 params: {
                     $filter: `UserId eq ${userId}`,
-                    $expand: 'User,Trainer'
+                    $expand: 'User,Trainer,TimeSlot'
                 },
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export const appointmentsService = {
             const response = await axios.get('http://localhost:5083/odata/appointments', {
                 params: {
                     $filter: `UserId eq ${userId} and Status eq '${status}'`,
-                    $expand: 'User,Trainer'
+                    $expand: 'User,Trainer,TimeSlot'
                 },
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export const appointmentsService = {
             const response = await axios.get('http://localhost:5083/odata/appointments', {
                 params: {
                     $filter: `TrainerId eq ${userId}`,
-                    $expand: 'User,Trainer'
+                    $expand: 'User,Trainer,TimeSlot'
                 },
                 headers: {
                     'Content-Type': 'application/json',
