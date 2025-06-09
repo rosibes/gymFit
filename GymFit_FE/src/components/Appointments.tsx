@@ -56,9 +56,20 @@ export const Appointments = ({ filterStatus = 'All', showTitle = true }: Appoint
 
         try {
             await appointmentsService.handleCancelAppointment(appointmentId);
-            const data = filterStatus === 'All'
-                ? await appointmentsService.getUserAppointments(user!.id)
-                : await appointmentsService.getAppointmentByStatus(user!.id, filterStatus);
+
+            // Re-fetch appointments based on user role and filter status
+            let data;
+            if (user!.userRole === 2) { // Trainer
+                const allAppointments = await appointmentsService.getTrainerAppointments();
+                data = filterStatus === 'All'
+                    ? allAppointments
+                    : allAppointments.filter(a => a.Status === filterStatus);
+            } else {
+                data = filterStatus === 'All'
+                    ? await appointmentsService.getUserAppointments(user!.id)
+                    : await appointmentsService.getAppointmentByStatus(user!.id, filterStatus);
+            }
+
             setAppointments(data);
             toast.success('Appointment cancelled successfully!', {
                 id: toastId,
@@ -81,24 +92,34 @@ export const Appointments = ({ filterStatus = 'All', showTitle = true }: Appoint
             try {
                 setLoading(true);
 
-                const count = filterStatus === 'All'
-                    ? await appointmentsService.getAppointmentsCount(user.id)
-                    : await appointmentsService.getAppointmentsCountByStatus(user.id, filterStatus);
-                setSkeletonCount(count);
+                let data;
+                if (user.userRole === 2) { // Trainer
+                    const allAppointments = await appointmentsService.getTrainerAppointments();
+                    data = filterStatus === 'All'
+                        ? allAppointments
+                        : allAppointments.filter(a => a.Status === filterStatus);
+                } else {
+                    const count = filterStatus === 'All'
+                        ? await appointmentsService.getAppointmentsCount(user.id)
+                        : await appointmentsService.getAppointmentsCountByStatus(user.id, filterStatus);
+                    setSkeletonCount(count);
 
-                const data = filterStatus === 'All'
-                    ? await appointmentsService.getUserAppointments(user.id)
-                    : await appointmentsService.getAppointmentByStatus(user.id, filterStatus);
+                    data = filterStatus === 'All'
+                        ? await appointmentsService.getUserAppointments(user.id)
+                        : await appointmentsService.getAppointmentByStatus(user.id, filterStatus);
+                }
 
                 setAppointments(data);
-                console.log(data)
+                console.log("appointments", data)
                 setError(null);
             } catch (err: any) {
                 setError(err.message || 'Failed to fetch appointments');
+                console.error('Error fetching appointments:', err);
             } finally {
                 setLoading(false);
             }
-        }
+        };
+
         fetchAppointments()
     }, [user, authLoading, navigate, filterStatus])
 
@@ -165,7 +186,7 @@ export const Appointments = ({ filterStatus = 'All', showTitle = true }: Appoint
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <h3 className="text-lg font-semibold text-gray-900">
-                                            {appointment.Trainer?.User?.FirstName} {appointment.Trainer?.User?.LastName}
+                                            {appointment.Trainer?.User?.Name}
                                         </h3>
                                         <p className="text-sm text-gray-600">{appointment.Trainer?.Specialization}</p>
                                     </div>
@@ -193,6 +214,12 @@ export const Appointments = ({ filterStatus = 'All', showTitle = true }: Appoint
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
                                         <span>{appointment.Trainer?.Location}</span>
+                                    </div>
+                                    <div className="flex items-center text-gray-600">
+                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <span>{appointment.Trainer?.User ? `${appointment.Trainer.User.Name}` : 'N/A'}</span>
                                     </div>
                                 </div>
 

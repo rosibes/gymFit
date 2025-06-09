@@ -27,8 +27,7 @@ export interface Appointment {
         Location: string;
         User?: {
             Id: number;
-            FirstName: string;
-            LastName: string;
+            Name: string;
             Email: string;
             PhoneNumber: string;
             DateOfBirth: string;

@@ -27,13 +27,15 @@ namespace GymFit_BE.Controllers
         [EnableQuery]
         public IActionResult Get()
         {
-
             _logger.Info("Getting all appointments via OData");
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            _logger.Info($"User {userId} with role {userRole} is viewing appointments");
 
             // Verificăm dacă există un filtru pentru UserId
             var odataQuery = HttpContext.Request.Query["$filter"].ToString();
+            _logger.Info($"OData query: {odataQuery}");
+
             if (odataQuery.Contains("UserId eq"))
             {
                 // Extragem ID-ul utilizatorului din query
@@ -46,21 +48,53 @@ namespace GymFit_BE.Controllers
                     return Forbid();
                 }
             }
+
             if (userRole == "Admin")
             {
                 _logger.Info("Getting all appointments for admin");
                 return Ok(_context.Appointments
                     .Include(a => a.User)
                     .Include(a => a.Trainer)
+                    .Include(a => a.Trainer.User)
+                    .Include(a => a.TimeSlot)
                     .AsQueryable());
             }
-            _logger.Info($"User {userId} is viewing their own appointments");
-            return Ok(_context.Appointments
-                   .Include(a => a.User)
-                   .Include(a => a.Trainer)
-                   .Where(a => a.UserId == userId)
-                   .AsQueryable());
+            else if (userRole == "Trainer")
+            {
+                _logger.Info($"Trainer with userID{userId} is viewing their appointments");
 
+                // Verificăm dacă trainerul există
+                var trainer = _context.Trainers.FirstOrDefault(t => t.UserId == userId);
+                if (trainer == null)
+                {
+                    _logger.Error($"Trainer not found for user {userId}");
+                    return NotFound(new { error = "Trainer not found" });
+                }
+
+                _logger.Info($"Found trainer with ID {trainer.Id} for user {userId}");
+
+                var trainerAppointments = _context.Appointments
+                    .Include(a => a.User)
+                    .Include(a => a.Trainer)
+                    .Include(a => a.Trainer.User)
+                    .Include(a => a.TimeSlot)
+                    .Where(a => a.TrainerId == trainer.Id)
+                    .AsQueryable();
+
+                _logger.Info($"Found {trainerAppointments.Count()} appointments for trainer {trainer.Id}");
+                return Ok(trainerAppointments);
+            }
+            else
+            {
+                _logger.Info($"User {userId} is viewing their own appointments");
+                return Ok(_context.Appointments
+                    .Include(a => a.User)
+                    .Include(a => a.Trainer)
+                    .Include(a => a.Trainer.User)
+                    .Include(a => a.TimeSlot)
+                    .Where(a => a.UserId == userId)
+                    .AsQueryable());
+            }
         }
 
         [HttpPost("new")]
@@ -173,6 +207,7 @@ namespace GymFit_BE.Controllers
                 _logger.Info($"Creating new subscription: {System.Text.Json.JsonSerializer.Serialize(appointmentDto)}");
                 var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
                 var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                var trainer = _context.Trainers.FirstOrDefault(t => t.UserId == userId);
 
                 var appointment = await _context.Appointments.FindAsync(id);
                 if (appointment == null)
@@ -182,7 +217,7 @@ namespace GymFit_BE.Controllers
                 }
 
                 // Verificăm dacă utilizatorul are dreptul să modifice programarea
-                if (appointment.UserId != userId && userRole != "Admin")
+                if (appointment.UserId != userId && userRole != "Admin" && appointment.TrainerId != trainer.Id)
                 {
                     _logger.Warn($"User {userId} attempted to update appointment {id} for another user {appointment.UserId}");
                     return Forbid();

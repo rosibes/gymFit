@@ -8,7 +8,7 @@ export const appointmentsService = {
             const response = await axios.get('http://localhost:5083/odata/appointments', {
                 params: {
                     $filter: `UserId eq ${userId}`,
-                    $expand: 'User,Trainer,TimeSlot'
+                    $expand: 'User,Trainer($expand=User),TimeSlot'
                 },
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,12 +27,34 @@ export const appointmentsService = {
         }
     },
 
+    getTrainerAppointments: async (): Promise<Appointment[]> => {
+        try {
+            const response = await axios.get('http://localhost:5083/odata/appointments', {
+                params: {
+                    $expand: 'User,Trainer($expand=User),TimeSlot'
+                },
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data.value;
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 403 || error.response?.status === 401) {
+                    throw new Error('Nu ai permisiunea să accesezi aceste programari');
+                }
+                throw new Error(error.response?.data?.message || 'Eroare la obținerea programarilor');
+            }
+            throw error;
+        }
+    },
+
     getAppointmentByStatus: async (userId: number, status: string): Promise<Appointment[]> => {
         try {
             const response = await axios.get('http://localhost:5083/odata/appointments', {
                 params: {
                     $filter: `UserId eq ${userId} and Status eq '${status}'`,
-                    $expand: 'User,Trainer,TimeSlot'
+                    $expand: 'User,Trainer($expand=User),TimeSlot'
                 },
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,29 +97,6 @@ export const appointmentsService = {
         }
     },
 
-    getTrainerAppointments: async (userId: number): Promise<Appointment[]> => {
-        try {
-            const response = await axios.get('http://localhost:5083/odata/appointments', {
-                params: {
-                    $filter: `TrainerId eq ${userId}`,
-                    $expand: 'User,Trainer,TimeSlot'
-                },
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            })
-            return response.data.value;
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                if (error.response?.status === 403 || error.response?.status === 401) {
-                    throw new Error('Nu ai permisiunea să accesezi aceste programari');
-                }
-                throw new Error(error.response?.data?.message || 'Eroare la obținerea progamarilor');
-            }
-            throw error;
-        }
-    },
 
     createAppointment: async (appointmentsData: Appointment) => {
         try {
@@ -161,7 +160,7 @@ export const appointmentsService = {
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 if (error.response?.status === 403 || error.response?.status === 401) {
-                    throw new Error('Nu ai permisiunea să anulezi această programare');
+                    throw new Error('Do not have permission to cancel this appointment');
                 }
                 throw new Error(error.response?.data?.message || 'Eroare la anularea programării');
             }

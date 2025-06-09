@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Subscriptions } from './Subscriptions';
@@ -162,6 +162,12 @@ export const Dashboard = () => {
                         Track your fitness journey and manage your subscriptions all in one place.
                     </p>
                     <div className="bg-indigo-50 rounded-xl p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-semibold text-gray-800">Recent Appointments</h2>
+                            <Link to="/appointments" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                View All Appointments →
+                            </Link>
+                        </div>
                         <Appointments filterStatus="Pending" showTitle={pendingAppointments.length > 0} />
                     </div>
                 </div>
@@ -202,43 +208,51 @@ export const Dashboard = () => {
                         </div>
                     ) : (
                         <div className="px-4">
-                            <Slider {...settings}>
-                                {subscriptions.map((subscription) => (
-                                    <div key={subscription.Id} className="px-2">
-                                        <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg overflow-hidden h-64 flex flex-col border border-gray-100 hover:border-indigo-200 transition-all duration-200">
-                                            <div className="p-6 flex-1 flex flex-col justify-between">
-                                                <div>
-                                                    <div className="flex justify-between items-start mb-4">
-                                                        <div>
-                                                            <h3 className="text-xl font-semibold text-gray-900">
-                                                                {subscription.Type}
-                                                            </h3>
-                                                            <p className="text-sm text-gray-600">
-                                                                {new Date(subscription.StartDate).toLocaleDateString()} - {new Date(subscription.EndDate).toLocaleDateString()}
-                                                            </p>
+                            <div className="bg-white rounded-lg shadow p-6">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-xl font-semibold text-gray-800">Active Subscriptions</h2>
+                                    <Link to="/subscriptions" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                        View All Subscriptions →
+                                    </Link>
+                                </div>
+                                <Slider {...settings}>
+                                    {subscriptions.map((subscription) => (
+                                        <div key={subscription.Id} className="px-2">
+                                            <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg overflow-hidden h-64 flex flex-col border border-gray-100 hover:border-indigo-200 transition-all duration-200">
+                                                <div className="p-6 flex-1 flex flex-col justify-between">
+                                                    <div>
+                                                        <div className="flex justify-between items-start mb-4">
+                                                            <div>
+                                                                <h3 className="text-xl font-semibold text-gray-900">
+                                                                    {subscription.Type}
+                                                                </h3>
+                                                                <p className="text-sm text-gray-600">
+                                                                    {new Date(subscription.StartDate).toLocaleDateString()} - {new Date(subscription.EndDate).toLocaleDateString()}
+                                                                </p>
+                                                            </div>
+                                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${subscription.IsActive
+                                                                ? 'bg-green-100 text-green-800'
+                                                                : 'bg-red-100 text-red-800'
+                                                                }`}>
+                                                                {subscription.IsActive ? 'Active' : 'Inactive'}
+                                                            </span>
                                                         </div>
-                                                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${subscription.IsActive
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-red-100 text-red-800'
-                                                            }`}>
-                                                            {subscription.IsActive ? 'Active' : 'Inactive'}
-                                                        </span>
                                                     </div>
-                                                </div>
 
-                                                <div className="mt-auto">
-                                                    <div className="flex items-center text-gray-600">
-                                                        <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                        <span className="text-lg font-semibold">{subscription.Price} Eur</span>
+                                                    <div className="mt-auto">
+                                                        <div className="flex items-center text-gray-600">
+                                                            <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                            <span className="text-lg font-semibold">{subscription.Price} Eur</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </Slider>
+                                    ))}
+                                </Slider>
+                            </div>
                         </div>
                     )}
                 </div>

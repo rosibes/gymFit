@@ -60,7 +60,7 @@ export const SubscriptionPlans = () => {
             navigate('/subscriptions');
         } catch (error) {
             console.error('Error creating subscription:', error);
-            toast.error('Failed to create subscription. Please try again.');
+            toast.error(error instanceof Error ? error.message : 'Failed to create subscription. Please try again.');
         }
     };
 

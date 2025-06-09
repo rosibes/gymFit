@@ -60,10 +60,15 @@ export const subscriptionService = {
             return response.data;
         } catch (error) {
             if (axios.isAxiosError(error)) {
+                console.log(error.response?.data);
                 if (error.response?.status === 403 || error.response?.status === 401) {
                     throw new Error('Nu ai permisiunea să creezi un abonament');
                 }
-                throw new Error(error.response?.data?.message || 'Eroare la crearea abonamentului');
+                else {
+                    if (error.response?.data?.error === "Duplicate subscription") {
+                        throw new Error('Subscription already exists');
+                    }
+                }
             }
             throw error;
         }
