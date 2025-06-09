@@ -12,6 +12,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import toast from 'react-hot-toast';
+import { DashboardHeader } from './DashboardHeader';
 
 export const Dashboard = () => {
     const [pendingAppointments, setPendingAppointments] = useState<Appointment[]>([]);
@@ -92,29 +93,7 @@ export const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-            <nav className="bg-white shadow-lg sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex justify-between h-16">
-                        <div className="flex items-center">
-                            <h1 className={`text-2xl font-bold bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent ${authLoading ? 'animate-pulse' : ''}`}>
-                                GymFit Dashboard
-                            </h1>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            <span className={`text-gray-700 ${authLoading ? 'animate-pulse' : ''}`}>
-                                Welcome, {user.name}
-                            </span>
-                            <button
-                                onClick={handleLogout}
-                                className="px-4 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg"
-                            >
-                                Logout
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
+            <DashboardHeader title="GymFit Dashboard" />
             <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
                 {/* Quick Actions Section */}
                 <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">

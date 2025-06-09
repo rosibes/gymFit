@@ -165,14 +165,23 @@ export const Appointments = ({ filterStatus = 'All', showTitle = true }: Appoint
             ) : appointments.length === 0 ? (
                 <div className="flex flex-row gap-6 justify-center items-center py-12">
                     <div className="bg-white rounded-lg shadow p-6 text-center w-full max-w-md">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Appointments Scheduled</h3>
-                        <p className="text-gray-600 mb-4">Book a session with one of our professional trainers.</p>
-                        <button
-                            onClick={() => navigate('/trainers')}
-                            className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-                        >
-                            Find a Trainer
-                        </button>
+                        {user.userRole === 2 ? (
+                            <>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Appointments Found</h3>
+                                <p className="text-gray-600 mb-4">You don't have any appointments scheduled at the moment.</p>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Appointments Scheduled</h3>
+                                <p className="text-gray-600 mb-4">Book a session with one of our professional trainers.</p>
+                                <button
+                                    onClick={() => navigate('/trainers')}
+                                    className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+                                >
+                                    Find a Trainer
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             ) : (
