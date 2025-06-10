@@ -163,6 +163,29 @@ public class SubscriptionsController : ODataController
         _logger.Info($"Subscription created successfully with ID: {subscription.Id}");
         return subscription;
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<Subscriptions>> DeleteSubscription(int id)
+    {
+        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+        if (userRole != "Admin")
+        {
+            _logger.Warn($"User {userRole} attempted to delete subscription with ID: {id}");
+            return Forbid();
+        }
+
+        _logger.Info($"Deleting subscription with ID: {id}");
+        var subscription = await _context.Subscriptions.FindAsync(id);
+        if (subscription == null)
+        {
+            _logger.Warn($"Subscription not found with ID: {id}");
+            return NotFound();
+        }
+        _context.Subscriptions.Remove(subscription);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
 }
 
 

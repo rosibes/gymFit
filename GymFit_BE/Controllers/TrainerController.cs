@@ -25,6 +25,7 @@ public class TrainerController : ODataController
         _logger.Info("Getting all trainers via OData");
         return Ok(_context.Trainers
             .Include(t => t.User)
+            .Include(t => t.TimeSlots)
             .AsQueryable());
     }
 

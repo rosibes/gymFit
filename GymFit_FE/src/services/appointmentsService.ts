@@ -168,5 +168,22 @@ export const appointmentsService = {
         }
     },
 
-
+    getAllAppointments: async (): Promise<Appointment[]> => {
+        try {
+            const response = await axios.get('http://localhost:5083/odata/appointments', {
+                params: {
+                    $expand: 'User,Trainer($expand=User),TimeSlot'
+                },
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data.value;
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new Error(error.response?.data?.message || 'Error fetching appointments');
+            }
+            throw error;
+        }
+    }
 }

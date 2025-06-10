@@ -96,5 +96,23 @@ export const subscriptionService = {
             }
             throw error;
         }
+    },
+
+    deleteSubscription: async (id: number): Promise<void> => {
+        try {
+            await axios.delete(`http://localhost:5083/odata/subscriptions/${id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 403 || error.response?.status === 401) {
+                    throw new Error('You are not authorized to delete this subscription');
+                }
+                throw new Error(error.response?.data?.message || 'Error deleting subscription');
+            }
+        }
     }
 }
